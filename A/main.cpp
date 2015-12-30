@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <string>
 
 #include "seqinfileenumerator.hpp"
 #include "summation.hpp"
@@ -37,36 +38,28 @@ class MySummation : public Summation<int, int>{
 		MySummation(int num) : Summation<int, int>(), num(num) {}
 };
 
-class Enor : public Enumerator<int>{
+class MyMax : public MaxSearch<int>{
 	private:
-		SeqInFileEnumerator<int>* enor;
-		int _current;
-		bool _end;
-	public:
-		Enor(const std::string& file){
-			enor = new SeqInFileEnumerator<int>(file);
+		int func(const int& n) const{
+			MyEnor me(n);
+			MySummation ms(n);
+			ms.addEnumerator(&me);
+			ms.run();
+			return ms.result();
 		}
-		~Enor(){ delete enor; }
-		void first() { enor->first(); next(); }
-		void next();
-		bool end() const { return _end; }
-		int current() const { return _current; }
 };
 
-void Enor::next(){
-
-}
-
 int main(){
-	int n;
-	std::cin >> n;
-	if (std::cin.fail())
-		exit(1);
-	MySummation ms(n);
-	MyEnor* me = new MyEnor(n);
-	ms.addEnumerator(me);
-	ms.run();
-	std::cout << ms.result() << std::endl;
+	std::string file;
+	std::cin >> file;
+	SeqInFileEnumerator<int>* enor = new SeqInFileEnumerator<int>(file);
+	MyMax mm;
+	mm.addEnumerator(enor);
+	mm.run();
+	if (mm.found())
+		std::cout << mm.optElem() << "-nek az osztoinak az osszege a legnagyobb: " << mm.opt() << std::endl;
+	else
+		std::cout << "Ures a fajl!" << std::endl;
 	system("pause");
 	return 0;
 }
